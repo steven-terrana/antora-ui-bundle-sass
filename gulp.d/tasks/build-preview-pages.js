@@ -11,8 +11,6 @@ const path = ospath.posix
 const requireFromString = require('require-from-string')
 const yaml = require('js-yaml')
 
-console.log("inside build-preview-pages.js")
-
 const ASCIIDOC_ATTRIBUTES = {
   experimental: '',
   icons: 'font',
@@ -20,11 +18,7 @@ const ASCIIDOC_ATTRIBUTES = {
   'source-highlighter': 'highlight.js',
 }
 
-gulp.task()
-
 function build(src, previewSrc, previewDest, sink = () => map(), layouts = {}){
-  console.log("inside build within preview")
-
   Promise.all([
     loadSampleUiModel(previewSrc),
     toPromise(
@@ -41,9 +35,6 @@ function build(src, previewSrc, previewDest, sink = () => map(), layouts = {}){
     gulp.src(`${previewSrc}/**/*.adoc`)
     .pipe(
       map((file, enc, next) => {
-        console.log("inside map.")
-        console.log(`--- file = ${file.path}`)
-        console.log(`--- next = ${next}`)
         const siteRootPath = path.relative(ospath.dirname(file.path), ospath.resolve(previewSrc))
         const uiModel = { ...baseUiModel }
         uiModel.page = { ...uiModel.page }

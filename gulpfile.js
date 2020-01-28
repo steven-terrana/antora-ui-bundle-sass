@@ -1,13 +1,18 @@
-const {src, dest, task, series, parallel, watch, cb} = require('gulp');
+const {src, dest, task, series, parallel, watch, done} = require('gulp');
 const sass = require('gulp-sass');
 const cssnano = require('cssnano'); 
-var postcss = require('gulp-postcss');
-var concat = require('gulp-concat');
+const postcss = require('gulp-postcss');
+const autoprefixer = require('autoprefixer')
+const concat = require('gulp-concat');
 const del = require('del'); 
 const browserSync = require('browser-sync').create();
 const imagemin = require('gulp-imagemin');
 const uglify = require('gulp-uglify');
+const browserify = require('browserify');
+const { obj: map } = require('through2');
+const fs = require('fs-extra')
 const zip = require('gulp-vinyl-zip');
+const sourcemaps = require('gulp-sourcemaps');
 
 const srcDir = "./src"
 const bundleName = 'ui'
@@ -19,68 +24,50 @@ const destDir = `${previewDestDir}/_`
 
 const lib = require('./gulp.d/tasks/build-preview-pages.js')
 
-const { reload: livereload } = process.env.LIVERELOAD === 'true' ? require('gulp-connect') : {}
-const serverConfig = { host: '0.0.0.0', port: 5252, livereload }
-const glob = {
-  all: [srcDir, previewSrcDir],
-  css: `${srcDir}/css/**/*.css`,
-  js: ['gulpfile.js', 'gulp.d/**/*.js', `${srcDir}/{helpers,js}/**/*.js`],
-}
-
 // clean up build dir and preview site
-function clean(cb){
-    console.log("cleaning!")
+function clean(done){
     del.sync([ bundleDir, previewDir ]);
-
-    cb()
+    done()
 }
 
 // compile scss into css
-function css(cb) {
-    console.log("compiling scss!")
-    const plugins = [ cssnano() ]
-    src(`${srcDir}/scss/**/*.scss`)  // fetch all scss files
-        /* TODO: find a linter for scss files */
-        .pipe(sass().on('error', sass.logError)) // convert to css
-        .pipe(postcss(plugins))                  // post process css (minify)
-        .pipe(concat('site.css'))                // dump into single file 
-        .pipe(dest(`${destDir}/css`))      // place in build dir 
-        .pipe(browserSync.stream());             // update browser for preview 
+function css(done) {
+    src(`${srcDir}/scss/**/*.scss`)
+        .pipe(sourcemaps.init())
+        .pipe(sass({
+            includePaths: [ './node_modules' ]
+        }).on('error', sass.logError)) 
+        .pipe(postcss([ autoprefixer(), cssnano() ]))
+        .pipe(concat('site.css'))
+        .pipe(sourcemaps.write('.'))
+        .pipe(dest(`${destDir}/css`))
+        .pipe(browserSync.stream());
     
-    cb();
+    done();
 }
 
 // minify JS 
-function js(cb) {
-    console.log("compiling javascript!")
-    
-    src(`${srcDir}/js/*.js`)
-        .pipe(uglify())
+function js(done) {
+    src(`${srcDir}/js/**/*.js`)
+        .pipe(sourcemaps.init())
         .pipe(concat('site.js'))
+        .pipe(uglify())
+        .pipe(sourcemaps.write('.'))
         .pipe(dest(`${destDir}/js`))
-
-    src(`${srcDir}/js/vendor/*.js`)
-    .pipe(uglify())
-    .pipe(dest(`${destDir}/js/vendor`))
-
-    cb()
+    done()
 }
 
-function helpers(cb){
-    console.log("moving helpers")
+function helpers(done){
     src(`${srcDir}/helpers/**/*.js`).pipe(dest(`${destDir}/helpers`))
-    cb(); 
+    done(); 
 }
 
-function handlebars(cb){
-    console.log("moving handlebars")
+function handlebars(done){
     src(`${srcDir}/{layouts,partials}/**/*.hbs`).pipe(dest(`${destDir}`))
-    
-    cb();
+    done();
 }
 
-function img(cb) {
-    console.log("minifying images")
+function img(done) {
     src(`${srcDir}/img/**/*.{gif,ico,jpg,png,svg}`)
       .pipe(imagemin([
           imagemin.gifsicle(),
@@ -88,30 +75,25 @@ function img(cb) {
           imagemin.svgo({ plugins: [{ removeViewBox: false }] }),
       ].reduce((accum, it) => it ? accum.concat(it) : accum, [])))
       .pipe(dest(`${destDir}/img`));
-
-    cb(); 
+    done(); 
 }
 
-function pack(cb) {
+function pack(done) {
     src(`${destDir}/**/*`)
     .pipe(zip.zip(`${bundleName}-bundle.zip`))
     .pipe(dest(`${bundleDir}`))
-
-    cb();
+    done();
 }
 
 function buildPreviewPages() {
-    console.log("building preview pages")
-
     return lib.build(srcDir, previewSrcDir, previewDestDir)
-
 }
 
-function previewBuild(cb){
+function previewBuild(done){
     exports.build();
     buildPreviewPages(); 
-    if (typeof cb === 'function') {
-        cb();
+    if (typeof done === 'function') {
+        done();
     }
 }
 
@@ -119,15 +101,18 @@ function reload(){
     return browserSync.reload(); 
 }
 
-function serve(cb) {
+function serve(done) {
     browserSync.init({
         server: {
-            baseDir: previewDestDir
-        }
+            baseDir: previewDestDir,
+        },
+        files: [ `${previewDestDir}/_/js/vendor/**/*.js` ],
+        notify: false
     })
     watch(`${srcDir}/scss/**/*.scss`, css)
     watch(`${srcDir}/**/*.{hbs,js}`).on('change', series(previewBuild, reload))
-    cb();
+    watch(`${previewSrcDir}/**/*`).on('change', series(previewBuild, reload))
+    done();
 }
 
 exports.clean = clean; 
