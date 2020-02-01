@@ -45,6 +45,7 @@
   @include mdc-text-field-ink-color($mdc-theme-primary);
   max-width: 0; 
   transition: all 0.2s ease; 
+  margin-right: 2rem; 
 }
 
 .mdc-text-field.search.expanded{

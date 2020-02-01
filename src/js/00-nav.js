@@ -17,34 +17,49 @@
     }
   })
 
-
-
-
   // nav 
-  var x = document.querySelectorAll('.mdc-list-item'); 
+  /// version select box
+  var select = document.querySelectorAll('.select-version')
+  for(var i = 0; i < select.length; i++){
+    var s = select[i]
+    s.addEventListener('change', function(event){
+      var component = this.getAttribute('data-component')
+      var version = this.options[this.selectedIndex].value
+      var showSelector = 'div[data-component="' + component + '"][data-version="' + version + '"]'
+      var hideSelector = 'div[data-component="' + component + '"]:not(.hide)'
+      var navShow = document.querySelector(showSelector)
+      var navHide = document.querySelector(hideSelector)
+      navShow.classList.remove('hide')
+      navHide.classList.add('hide')
+    })
+  }
+
+  /// nav-tree
+  var x = document.querySelectorAll('.nav-item .material-icons'); 
   for(var i = 0; i < x.length; i++){ 
     mdc.ripple.MDCRipple.attachTo(x[i])
     x[i].addEventListener('click', function(event){
+      console.log('click!')
       var item = event.target
-      var panel = item.nextElementSibling
+      var panel = item.parentElement.nextElementSibling
       var height, itemHasChildren = false;
       if(panel){
-        itemHasChildren = panel.classList.contains('mdc-list-item--children-panel')
+        itemHasChildren = panel.classList.contains('nav-children-panel')
       }
       if(itemHasChildren){
         height = panel.scrollHeight
-        var childrenPanels = panel.querySelectorAll('.mdc-list-item--children-panel')
+        var childrenPanels = panel.querySelectorAll('.nav-children-panel')
         for(var j=0; j < childrenPanels.length; j++){
             height = height + childrenPanels[j].scrollHeight
         }
       }
-      if(item.classList.contains('mdc-list-item--activated')){
-        item.classList.remove('mdc-list-item--activated')
+      if(item.classList.contains('expanded')){
+        item.classList.remove('expanded')
         if(itemHasChildren){
           panel.style.maxHeight = null
         }
       } else{
-        item.classList.add('mdc-list-item--activated')
+        item.classList.add('expanded')
         if(itemHasChildren){
           panel.style.maxHeight = height + 'px'
         }
@@ -54,15 +69,3 @@
   }
 
 })()
-
-
-var p = document.querySelectorAll('.mdc-list-item--children-panel'); 
-var maxWidth = 0; 
-var pWidth
-for(var i = 0; i < p.length; i++){
-  pWidth = p[i].scrollWidth
-  if(pWidth > maxWidth) {
-    maxWidth = pWidth
-  }
-}
-document.querySelector('.nav-container').style.width = pWidth

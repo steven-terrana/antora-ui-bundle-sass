@@ -1,4 +1,4 @@
-footer.footer {
+div.footer {
   background-color: var(--footer-background);
   color: var(--footer-font-color);
   font-size: calc(15 / var(--rem-base) * 1rem);
@@ -6,10 +6,10 @@ footer.footer {
   padding: 1.5rem;
 }
 
-.footer p {
+div.footer p {
   margin: 0.5rem 0;
 }
 
-.footer a {
+div.footer a {
   color: var(--footer-link-font-color);
 }

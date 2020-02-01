@@ -1,37 +1,41 @@
 {{#if navigation.length}}
-<div class="nav-list">
   {{#each navigation}}
     {{#if ./content}}
       {{#if ./url}}
         {{~#if (eq ./urlType 'internal')}}
-        <a class="mdc-list-item {{#if (eq @root.page.url ./url)}} is-current-page{{/if}}" href="{{{relativize ./url}}}">
-          {{#if ./items.length}}
-            <i class="material-icons mdc-list-item__graphic" aria-hidden="true">chevron_right</i>
-          {{/if}}
-          <span class="mdc-list-item__text">{{{./content}}}</span>
-        </a>
+          <div class="nav-item">
+            {{#if ./items.length}}
+              <i class="material-icons" aria-hidden="true">chevron_right</i>
+            {{/if}}
+            <a  class="{{#unless ./items.length}}spacer{{/unless}}{{#if (eq @root.page.url ./url)}} is-current-page{{/if}}" href="{{{relativize ./url}}}">
+              {{{./content}}}
+            </a>
+          </div>
         {{~else}}
-        <a class="mdc-list-item {{#if (eq @root.page.url ./url)}} is-current-page{{/if}}" href="{{{./url}}}">
-          {{#if ./items.length}}
-            <i class="material-icons mdc-list-item__graphic" aria-hidden="true">chevron_right</i>
-          {{/if}}
-          <span class="mdc-list-item__text">{{{./content}}}</span>
-        </a>
+          <div class="nav-item">
+            {{#if ./items.length}}
+              <i class="material-icons" aria-hidden="true">chevron_right</i>
+            {{/if}}
+            <a class="{{#unless ./items.length}}spacer{{/unless}}{{#if (eq @root.page.url ./url)}} is-current-page{{/if}}" href="{{{./url}}}">
+              {{{./content}}}
+            </a>
+          </div>
         {{~/if}}
       {{else}}
-        <span class="mdc-list-item {{#if (eq @root.page.url ./url)}} is-current-page{{/if}}">
+        <div class="nav-item">
           {{#if ./items.length}}
-            <i class="material-icons mdc-list-item__graphic" aria-hidden="true">chevron_right</i>
+            <i class="material-icons" aria-hidden="true">chevron_right</i>
           {{/if}}
-          <span class="mdc-list-item__text">{{{./content}}}</span>
-        </span>
+          <span class="{{#unless ./items.length}}spacer{{/unless}}{{#if (eq @root.page.url ./url)}} is-current-page{{/if}}">
+            {{{./content}}}
+          </span>
+        </div>
       {{/if}}
       {{#if ./items.length}}
-        <div class="mdc-list-item--children-panel">
-          {{> nav-tree navigation=./items level=(increment ../level)}}
+        <div style="--depth={{../depth}}" class="nav-children-panel">
+          {{> nav-tree navigation=./items depth=(increment ../depth)}}
         </div>
       {{/if}}
     {{/if}}
   {{/each}}
-</div>
 {{/if}}

@@ -1,182 +1,203 @@
 
 // customizations 
 // navigation
+@import "./common";
 @import "@material/drawer/mdc-drawer";
-@import "@material/list/mdc-list";
 @import "@material/ripple/mdc-ripple";
+@import "@material/list/mdc-list";
+@import "@material/menu-surface/mdc-menu-surface";
+@import "@material/menu/mdc-menu";
+@import "@material/select/mdc-select";
 
+$nav-width: 20%; 
+$expand-animation-time: 0.3s; 
 
+div.nav-container {
+  @include mdc-elevation(4);
 
-.nav-container .mdc-list-item.is-current-page {
-  color: $mdc-theme-primary;
-}
+  font-size: 11pt;
+  min-width: $nav-width;
 
-div.mdc-list-item--activated {
-  background-color: white; 
-
-  a.mdc-list-item__text {
-    color: $mdc-theme-primary
-  }
-}
-
-/*
-  this jacked up selector was the only way i could override the default background color 
-  for the mdc-list nonsense. 
-*/
-:not(.mdc-list--non-interactive)>:not(.mdc-list-item--disabled).mdc-list-item--activated:after, :not(.mdc-list--non-interactive)>:not(.mdc-list-item--disabled).mdc-list-item--activated:before {
-  background-color: white; 
-}
-
-a.mdc-list-item__text { 
-  color: black 
-}
-
-// push the nav menu down a bit 
-.mdc-drawer__content {
-  margin-top: 20px; 
-}
-
-// styling for the nav aside
-.nav-container {
-  @include mdc-drawer-fill-color-accessible(white);
-  @include mdc-drawer-z-index(0);
-  @include mdc-elevation(1);
-
-  text-transform: uppercase;
-
-  width: 50%; 
-
-  .mdc-list {
-    @include mdc-list-single-line-density(-4)
-    @include mdc-list-single-line-shape-radius(0, true, 0)
-
-    margin: 5px 5px 5px 5px;
+  aside {
+    position: fixed;
+    height: 100%;
+    margin-top: 2.5rem;
+    padding-left: 0.5rem; 
   }
 
-  .mdc-list-item {
+  .material-icons {
     color: black; 
-    justify-content: left;
-    font-size: 12px; 
-    overflow-wrap: break-word; 
+    font-size: 12pt; 
+    min-width: 1rem; 
+    transition: all $expand-animation-time ease-in-out; 
+    
+    &:hover {
+      cursor: pointer; 
+    }
+
+    &.expanded {
+      transform: rotate(90deg);
+      transition: all $expand-animation-time ease-in-out; 
+    }
   }
 
-  .mdc-list-item:hover {
-    background-color: #fafafa;
+  .nav-item {
+    max-width: 16rem; 
+    color: black; 
+    vertical-align: middle;
+    padding-top: 0.2rem; 
+    padding-bottom: 0.2rem; 
+
+    a{
+      text-decoration: none; 
+      color: black; 
+    }
+
+
+    & .is-current-page {
+      color: $mdc-theme-secondary; 
+    }
+
+    &:hover {
+      background-color: #EEEEEE;
+    }
+  }
+
+  .nav-item .spacer {
+    display: inline-block; 
+    padding-left: 1.2rem; 
   }
 
 }
 
-.mdc-list-item--children-panel {
-  padding-left: 1rem;
+.nav-children-panel {
+  padding-left: 0.5rem; 
   max-height: 0;
   overflow: hidden; 
-  transition: max-height 0.2s ease-out;
+  transition: max-height $expand-animation-time ease-out;
 }
 
-aside.mdc-drawer .mdc-list-item .mdc-list-item__graphic{
-  transition: all 0.2s ease-out;
-  margin-right: 0.25rem; 
+.nav-trees {
+  max-width: 100%;
+  margin: 0; 
+  margin-right: 2rem; 
 }
 
-aside.mdc-drawer .mdc-list-item--activated .mdc-list-item__graphic{
-  transform: rotate(90deg); 
-  transition: transform 0.2s; 
-}
+// version select 
+.version-box {
+  margin: 0; 
+  float: right; 
+  display: inline-block; 
+  margin-top: 4px; 
 
-/////////////////
-.nav-container {
-  position: fixed;
-  top: var(--navbar-height);
-  left: 0;
-  font-size: calc(17 / var(--rem-base) * 1rem);
-  z-index: var(--z-index-nav);
-  visibility: hidden;
-}
+  span {
+    color: #aaa;
+    padding-left: 1.2em; 
+    padding-top: -6px; 
+    font-size: 7pt; 
+  }
 
-@media screen and (min-width: 769px) {
-  .nav-container {
-    width: calc( var(--nav-width));
+  &:hover span {
+    color: $mdc-theme-secondary;
   }
 }
 
-@media screen and (min-width: 1024px) {
-  .nav-container {
-    font-size: calc(15.5 / var(--rem-base) * 1rem);
-    flex: none;
-    position: static;
-    top: 0;
-    visibility: visible;
-  }
+
+.select-version {
+	display: block;
+	font-size: 9pt;
+	color: #aaa;
+	padding: .6em 0 .5em .8em;
+	box-sizing: border-box;
+	margin: 0;
+	border: 1px solid #aaa;
+	border-radius: .5em;
+  -moz-appearance: none;
 }
 
-.nav-container.is-active {
-  visibility: visible;
+.select-version::-ms-expand {
+	display: none;
 }
 
-.nav {
-  background: var(--nav-background);
-  position: relative;
-  top: var(--toolbar-height);
-  height: var(--nav-height);
+.select-version:hover {
+  border-color: $mdc-theme-secondary;
+  color: $mdc-theme-secondary;
 }
 
-@media screen and (min-width: 769px) {
-  .nav {
-    box-shadow: 0.5px 0 3px var(--nav-border-color);
-  }
+.select-version:focus {
+	border-color: #aaa;
+	box-shadow: #aaa;
+	box-shadow: 0 0 0 3px -moz-mac-focusring;
+  color: $mdc-theme-secondary;
+  border-color: $mdc-theme-secondary;
+	outline: none;
 }
 
-@media screen and (min-width: 1024px) {
-  .nav {
-    top: var(--navbar-height);
-    box-shadow: none;
-    position: sticky;
-    height: var(--nav-height--desktop);
-  }
+.select-version option {
+	font-weight:normal;
 }
 
-.nav .panels {
-  display: flex;
-  flex-direction: column;
-  height: inherit;
+.clear {
+  clear: both; 
 }
 
-html.is-clipped--nav {
-  overflow-y: hidden;
+.hide {
+  display: none !important; 
 }
 
-.nav-panel-menu {
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  height: var(--nav-panel-height);
-}
+// .nav-container .versions{
+//   @include mdc-select-ink-color($mdc-theme-secondary)
+//   @include mdc-select-label-color($mdc-theme-secondary)
+//   @include mdc-select-focused-label-color($mdc-theme-secondary)
+//   @include mdc-select-bottom-line-color($mdc-theme-secondary)
+//   @include mdc-select-focused-bottom-line-color($mdc-theme-secondary)
+//   @include mdc-select-hover-bottom-line-color($mdc-theme-secondary)
+//   @include mdc-select-outline-color($mdc-theme-secondary)
+//   @include mdc-select-focused-outline-color($mdc-theme-secondary)
+//   @include mdc-select-hover-outline-color($mdc-theme-secondary)
 
-@media screen and (min-width: 1024px) {
-  .nav-panel-menu {
-    height: var(--nav-panel-height--desktop);
-  }
-}
+//   border: 1px solid $mdc-theme-secondary; 
+//   min-width: 2rem; 
+//   max-width: auto; 
 
-.nav-panel-menu:not(.is-active) .nav-menu {
-  opacity: 0.75;
-}
+//   .mdc-floating-label {
+//     font-size: 9pt; 
+//   }
+
+//   .mdc-list {
+//     @include mdc-list-item-primary-text-ink-color($mdc-theme-secondary)
+//     @include mdc-list-divider-color(#EEEEEE)
+
+//     font-size: 9pt; 
+//     height: 100%; 
+
+//     .mdc-list-item {
+//       height: 1.5rem; 
+      
+//       &:hover{
+//         background-color: #EEEEEE;
+//       }
+//     }
+
+//     .mdc-list-item--selected {
+//       color: $mdc-theme-secondary
+//     }
+//   }
 
 
 
-.nav-menu {
-  flex-grow: 1;
-  min-height: 0;
-  width: 100%;
-  padding: 0.5rem 0.75rem;
-  line-height: var(--nav-line-height);
-  position: relative;
-}
+//   .mdc-select__selected-text {
+//     font-size: 9pt; 
+//     padding-top: 1rem;
+//     padding-left: 1.2rem; 
+//     padding-right: 1.75rem; 
+//     border-bottom: 0px; 
+//     min-width: 5rem; 
+//     background: transparent; 
+//   }
 
-.mdc-drawer__content .nav-list {
-  margin-left: 0; 
-}
-
-ul.nav-list {
-  padding-inline-start: 2px; 
-}
+//   .mdc-select__dropdown-icon {
+//     color: $mdc-theme-secondary; 
+//     background: transparent; 
+//   }
+// }

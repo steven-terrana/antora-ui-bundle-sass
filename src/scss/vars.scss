@@ -122,8 +122,8 @@
   --nav-panel-height: calc(var(--nav-height) - var(--drawer-height));
   --nav-panel-height--desktop: calc(var(--nav-height--desktop) - var(--drawer-height));
   --nav-width: calc(270 / var(--rem-base) * 1rem);
-  --doc-max-width: calc(100% - calc(270 / var(--rem-base) * 1rem));// calc(720 / var(--rem-base) * 1rem);
-  --doc-max-width--desktop: calc(100% - calc(270 / var(--rem-base) * 1rem)); // calc(828 / var(--rem-base) * 1rem);
+  --doc-max-width: 100%;
+  --doc-max-width--desktop: 100%;
   /* stacking */
   --z-index-nav: 1;
   --z-index-toolbar: 2;

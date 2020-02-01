@@ -1,8 +1,24 @@
 {{#if page.navigation}}
-<aside class="mdc-drawer mdc-drawer--modal mdc-drawer--open nav-container">
-  <div class="mdc-drawer__content">
-    {{> nav-tree navigation=page.navigation}}
-  </div>
+<aside class="nav-container">
+    {{#each site.components}}
+      <div class="nav-trees">
+        <div class="version-box">
+          <select data-component="{{this.name}}" class="select-version">
+            {{#each this.versions}}
+              <option value="{{this.version}}">
+                {{this.displayVersion}}
+              </option>
+            {{/each}}
+          </select>
+        </div>
+        {{#each this.versions}}
+          <div data-component="{{../name}}" data-version="{{this.version}}" class="{{#unless (eq ./version ../latestVersion.version)}}hide{{/unless}}">
+            {{> nav-tree navigation=./navigation depth=1 }}
+          </div>
+        {{/each}}
+      </div>      
+      <div class="clear"></div>
+    {{/each}}
 </aside>
 {{/if}}
 
